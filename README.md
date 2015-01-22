@@ -70,18 +70,40 @@ do_something_interesting()
 EXAS.Top.end_measuring(measuring)
 ```
 
-A simpler way is to measure one function call:
+A simpler way is to measure an expression using the macro
 
 ```
-EXAS.Top.measure("my-measuring-point", fn -> ... end)
+EXAS.Top.measure "my-measuring-point" do
+    ...
+end
 ```
 
-The measurings can be retrieved with `EXAS.Top.measurings`, which returns a
-list of tuples. These contain the measuring point, the number of calls, the
+The measurings can be retrieved with `EXAS.Top.retrieve`, which returns a
+list of records. These contain the measuring point, the number of calls, the
 minimum and the maximum measured times, the average time, and the total time.
 The measurings can be reset with `EXAS.Top.reset`.
 
-### Stay-Set Indicators
+### Stay-Set Variables
+
+The module `EXAS.SSV` allows to monitor numerical values over time. They are
+set by calling
+
+```
+EXAS.SSV.set(:my_variable, 1)
+EXAS.SSV.set(:my_variable, 17)
+EXAS.SSV.set(:my_variable, -1)
+```
+
+Additionally simple changes by calling
+
+```
+EXAS.SSV.increase(:my_variable)
+EXAS.SSV.decrease(:my_variable)
+```
+
+The Variables can be retrieved by calling `EXAS.SSV.retrieve`. For each variable
+the actual, minimum, and maximum values are returned together with their timestamps.
+Additionally the total number of settings and the average value.
 
 ### Dynamic Status Retrievers
 

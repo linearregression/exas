@@ -10,8 +10,17 @@ defmodule EXAS.SSV do
   together with their lowest and highest values.
   """
 
+	defmodule Value do
+		defstruct value: 0.0, timestamp: :os.timestamp()
+	end
+
   defmodule Variable do
-    defstruct id: nil, act: {0.0, :os.timestamp()}, min: {0.0, :os.timestamp()}, max: {0.0, :os.timestamp()}, count: 1, avg: 0.0
+    defstruct id: nil, 
+              act: %Value{},
+              min: %Value{},
+              max: %Value{},
+              count: 1, 
+              avg: 0.0
   end
 
   # --------------------
@@ -114,9 +123,9 @@ defmodule EXAS.SSV do
     # Set a value.
     initial = %Variable{
       id: vid,
-      act: {value, ts},
-      min: {value, ts},
-      max: {value, ts},
+      act: %Value{value: value, timestamp: ts},
+      min: %Value{value: value, timestamp: ts},
+      max: %Value{value: value, timestamp: ts},
       avg: value,
     }
     updater = make_updater(fn _ -> value end, ts)
@@ -128,9 +137,9 @@ defmodule EXAS.SSV do
     act = 0.0 + change
     initial = %Variable{
       id: vid,
-      act: {act, ts},
-      min: {act, ts},
-      max: {act, ts},
+      act: %Value{value: act, timestamp: ts},
+      min: %Value{value: act, timestamp: ts},
+      max: %Value{value: act, timestamp: ts},
       avg: act,
     }
     updater = make_updater(&(&1 + change), ts)
@@ -166,23 +175,20 @@ defmodule EXAS.SSV do
   # and a timestamp.
   defp make_updater(changer, ts) do
     fn old_variable ->
-      {old, _} = old_variable.act
-      {old_min, old_min_ts} = old_variable.min
-      {old_max, old_max_ts} = old_variable.max
-      act = changer.(old)
+      new_act_value = changer.(old_variable.act.value)
       min = cond do
-        act < old_min -> {act, ts}
-        true          -> {old_min, old_min_ts}
+        new_act_value < old_variable.min.value -> %Value{value: new_act_value, timestamp: ts}
+        true                                   -> old_variable.min
       end
       max = cond do
-        act > old_max -> {act, ts}
-        true          -> {old_max, old_max_ts}
+    		new_act_value > old_variable.max.value -> %Value{value: new_act_value, timestamp: ts}
+    		true                                   -> old_variable.max
       end
       count = old_variable.count + 1
-      avg = (old_variable.avg * old_variable.count + act) / count
+      avg = (old_variable.avg * old_variable.count + new_act_value) / count
       %Variable{
         id: old_variable.id,
-        act: {act, ts},
+        act: %Value{value: new_act_value, timestamp: ts},
         min: min,
         max: max,
         count: count,

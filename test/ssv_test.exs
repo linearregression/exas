@@ -20,10 +20,9 @@ defmodule EXAS.SSVTest do
     assert setting.count == 3
     assert setting.avg == 0.0
 
-    assert {0.0, _} = setting.act
-    assert {-1.0, _} = setting.min
-    assert {1.0, _} = setting.max
-    assert {1.0, _} = setting.max
+    assert setting.act.value == 0.0
+    assert setting.min.value == -1.0
+    assert setting.max.value == 1.0
     
     EXAS.SSV.stop
   end
