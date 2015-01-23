@@ -27,6 +27,24 @@ defmodule EXAS.SSVTest do
     EXAS.SSV.stop
   end
 
+  test "set multiple values and retrieve filtered" do
+    EXAS.SSV.start_link
+
+		for id <- [:v1, :v2, :v3, :v4, :v5] do
+			for v <- [-2, -1, 0, 1, 2, 3, 4], do: EXAS.SSV.set(id, v)
+		end
+
+    settings = EXAS.SSV.retrieve(fn s -> s.id in [:v2, :v4] end)
+    
+    assert length(settings) == 2
+    
+    for s <- settings do
+    	assert s.id in [:v2, :v4]
+    end
+    
+    EXAS.SSV.stop
+  end
+
   test "ping the SSV" do
     EXAS.SSV.start_link
 
