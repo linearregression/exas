@@ -14,7 +14,7 @@ defmodule EXAS.DSRTest do
   	states = EXAS.DSR.retrieve
   	
   	assert length(states) == 1
-  	assert hd(states) == {:ok, {:abc, {:a, :b, :c}}}
+  	assert hd(states) == {:abc, {:ok, {:a, :b, :c}}}
   
   	EXAS.DSR.stop
   end
@@ -29,7 +29,7 @@ defmodule EXAS.DSRTest do
   	states = EXAS.DSR.retrieve
   	
   	assert length(states) == 1
-  	assert hd(states) == {:ok, {:abc, {:a, :b, :c}}}
+  	assert hd(states) == {:abc, {:ok, {:a, :b, :c}}}
   
   	EXAS.DSR.stop
   end
@@ -42,7 +42,7 @@ defmodule EXAS.DSRTest do
   	states = EXAS.DSR.retrieve
   	
   	assert length(states) == 1
-  	assert hd(states) == {:error, {:fail, :badarith}}
+  	assert hd(states) == {:fail, {:error, :badarith}}
   
   	EXAS.DSR.stop
   end
@@ -57,8 +57,8 @@ defmodule EXAS.DSRTest do
   
   	states = EXAS.DSR.retrieve
   	counters = Enum.reduce(states, {0, 0}, fn
-  		({:ok, _},    {oks, errors}) -> {oks + 1, errors}
-  		({:error, _}, {oks, errors}) -> {oks, errors + 1}
+  		({_, {:ok, _}},    {oks, errors}) -> {oks + 1, errors}
+  		({_, {:error, _}}, {oks, errors}) -> {oks, errors + 1}
   	end)
   	
   	assert length(states) == 4
@@ -75,7 +75,7 @@ defmodule EXAS.DSRTest do
 		EXAS.DSR.register(:fail, &fail_retriever/0)
   	EXAS.DSR.register(:abc_c, &abc_retriever/0)
   
-  	states = EXAS.DSR.retrieve(fn {exec_rc, _} -> exec_rc == :ok end)
+  	states = EXAS.DSR.retrieve(fn {_, {exec_rc, _}} -> exec_rc == :ok end)
   	
   	assert length(states) == 3
   	

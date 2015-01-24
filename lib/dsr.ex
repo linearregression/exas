@@ -143,9 +143,9 @@ defmodule EXAS.DSR do
 	defp retrieve_status(id, retriever) do
 		try do
 			status = retriever.()
-  		{:ok, {id, status}}
+  		{id, {:ok, status}}
 		catch
-			_, reason -> {:error, {id, reason}}
+			_, reason -> {id, {:error, reason}}
 		end
 	end
 

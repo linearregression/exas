@@ -107,6 +107,12 @@ Additionally the total number of settings and the average value.
 
 ### Dynamic Status Retrievers
 
+With the module `EXAS.DSR` functions for the retrieval of a status can be registered
+with an identifier. Those functions can e.g. communicate to other processes, check
+the existence of files, or the reachability of other nodes. When the states are
+retrieved by calling `EXAS.DSR.retrieve` the functions will be executed and the result
+returned.
+
 ## Contributors
 
 - Frank Mueller - <mue@tideland.biz>
