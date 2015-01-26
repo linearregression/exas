@@ -27,7 +27,7 @@ defmodule EXAS.DSR do
   end
 
   @doc """
-  Sttop the top server.
+  Stop the top server.
   """
   def stop do
     GenServer.call(__MODULE__, :stop)
