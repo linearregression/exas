@@ -7,6 +7,8 @@ defmodule EXAS.Scene do
 
   @moduledoc """
   Scene provides a shared access to common used data in a larger context.
+  Beside a simple atomic way to store and fetch information it handles 
+  inactivity and absolute timeouts.
   """
 
   # --------------------

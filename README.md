@@ -123,7 +123,7 @@ software. Here aspects of the action have to passed between the actors in a secu
 way, very often they are interwoven and depending.
 
 Here the scene package helps. Beside a simple atomic way to store and fetch information
-together with optional cleanup functions it handles inactivity and absolute timeouts.
+it handles inactivity and absolute timeouts.
 
 ## Contributors
 
