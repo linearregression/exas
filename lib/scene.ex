@@ -66,33 +66,50 @@ defmodule EXAS.Scene do
 		send pid, {:dispose, key}
 		:ok
 	end
+	
+	@doc """
+	Flag a topic to interested actors waiting for it.
+	"""
+	def flag(pid, topic) do
+		send pid, {:flag, topic}
+		:ok
+	end
 
   # --------------------
   # PRIVATE
   # --------------------
 
 	# Backend loop  of the scene.
-	defp loop(id, inactivity, props, signals) do
+	defp loop(id, inactivity, props, signallings) do
 		receive do
 			{:store, key, prop} ->
 				props = Dict.put(props, key, prop)
-				loop(id, inactivity, props, signals)
+				loop(id, inactivity, props, signallings)
 			{:fetch, key, pid} ->
 				case Dict.fetch(props, key) do
 					{:ok, {prop, _}} -> send pid, {:ok, key, prop}
 					:error           -> send pid, {:error, key, :not_found}
 				end
-				loop(id, inactivity, props, signals)
+				loop(id, inactivity, props, signallings)
 			{:dispose, key} ->
-				props = Dict.delete(props, key)
-				loop(id, inactivity, props, signals)
+				props = Dict.delete props, key
+				loop(id, inactivity, props, signallings)
+			{:flag, topic} ->
+				signallings = case Dict.fetch(signallings, topic) do
+					{:ok, actors} ->
+						actors |> Enum.each send &1, {:flag, topic}
+						Dict.delete signallings, topic
+					_ ->
+						signallings	
+				end
+				loop(id, inactivity, props, signallings)
 		after
 			inactivity ->
-				cleanup(props, signals)
+				cleanup(props, signallings)
 		end
 	end
 
-	# Cleanup all stored properties and signals.
+	# Cleanup all stored properties and signallings.
 	defp cleanup(_props, _signals) do
 	end
 
